@@ -15,6 +15,7 @@ A = [[], []]  # 輸入值跟時間
 b = 0  # backspace計數
 current_user_id = None
 is_monitoring = False
+current_baseline = None  # 儲存當前使用者的基準線
 
 # 讀取.env 檔案
 load_dotenv()
@@ -347,6 +348,12 @@ class LoginWindow:
         BaselineSetupWindow(baseline_root, account)
         baseline_root.mainloop()
         
+    def open_main_window(self, account):
+        """開啟主視窗"""
+        main_root = tk.Tk()
+        MainWindow(main_root, account)
+        main_root.mainloop()
+        
 class BaselineSetupWindow:
     def __init__(self, root, account):
         self.root = root
@@ -488,9 +495,9 @@ class BaselineSetupWindow:
             messagebox.showerror("錯誤", "儲存基準線失敗，請重試")
             self.btn_start.config(state=tk.NORMAL)
             
-    def open_main_window(self, account):
+    def open_main_window(self):
         main_root = tk.Tk()
-        MainWindow(main_root, account)
+        MainWindow(main_root, self.account)
         main_root.mainloop()
 
 class MainWindow:
@@ -498,11 +505,11 @@ class MainWindow:
         self.root = root
         self.account = account
         self.root.title(f"專注力監測 - {account}")
-        self.root.geometry("500x600")
-        self.root.resizable(False, False)
+        self.root.geometry("550x600")
         
         # 標題區
         header = tk.Frame(root, bg="#2196F3", height=70)
+        header.pack(fill=tk.X)
         header.pack_propagate(False)
         
         header_left = tk.Frame(header, bg="#2196F3")
@@ -621,6 +628,7 @@ class MainWindow:
         
         self.btn_start.config(state=tk.DISABLED)
         self.btn_stop.config(state=tk.NORMAL)
+        self.btn_reset_baseline.config(state=tk.DISABLED)
         self.label_status.config(text="監測中...")
         
         # 開始鍵盤監聽
