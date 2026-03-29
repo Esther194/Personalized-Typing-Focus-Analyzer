@@ -1,6 +1,7 @@
 # 基於打字行為的即時專注力分析平台
 ## 簡介
 基於幾項指標來分析打字時的認知負荷狀態，包括打字速度(WPM)、按鍵間隔(IKI)、退格率(BSR)，根據專注分數切換介面顏色
+
 <img width="496" height="406" alt="image" src="https://github.com/user-attachments/assets/b06644fa-44e0-41e1-bbaf-9602903a1fac" />
 
 <img width="740" height="663" alt="image" src="https://github.com/user-attachments/assets/575e5dbc-8eb8-498e-b395-bb3507abf4b3" />
