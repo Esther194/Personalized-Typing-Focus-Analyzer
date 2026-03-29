@@ -10,32 +10,55 @@ conn = mysql.connector.connect(
     host=os.getenv("DB_HOST"),      # 讀取 .env 裡的 DB_HOST
     user=os.getenv("DB_USER"),      # 讀取 .env 裡的 DB_USER
     password=os.getenv("DB_PASSWORD"), # 讀取 .env 裡的 DB_PASSWORD
+    database=os.getenv("DB_NAME"), # 讀取 .env 裡的 DB_NAME
 )
 
 
 
 # 創建游標對象來執行 SQL 查詢
 cursor = conn.cursor()
-db_name = os.getenv("DB_NAME")
 
-#創資料庫
-cursor.execute(f"CREATE DATABASE IF NOT EXISTS {db_name}")
+#創建資料表存使用著資料
+cursor.execute('''
+    CREATE TABLE IF NOT EXISTS users (
+        user_id INT AUTO_INCREMENT PRIMARY KEY,
+        account VARCHAR(50) UNIQUE NOT NULL,
+        password VARCHAR(255) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+''')
 
-#選資料庫
-cursor.execute(f"USE {db_name}")
+#創建資料表存基準線
+cursor.execute('''
+    CREATE TABLE IF NOT EXISTS baseline (
+        baseline_id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT UNIQUE,
+        wpm FLOAT,
+        iki_mean FLOAT,
+        iki_std FLOAT,
+        bsr FLOAT,
+        sample_count INT DEFAULT 0,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(user_id)
+    )
+''')
 
-# SQL 語句：創建資料表
-create_table_query = '''
-CREATE TABLE IF NOT EXISTS Information (
-    userid INT,
-    time INT,
-    FocusIndex INT,
-    LevelOfFocus INT
-);
-'''
-
-# 執行創建資料表語句
-cursor.execute(create_table_query)
+#創建資料表存歷史紀錄
+cursor.execute('''
+    CREATE TABLE IF NOT EXISTS focus_records (
+        record_id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT,
+        focus_score FLOAT,
+        wpm FLOAT,
+        iki_mean FLOAT,
+        iki_std FLOAT,
+        bsr FLOAT,
+        total_keys INT,
+        session_duration FLOAT,
+        recorded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(user_id)
+    )
+''')
 
 
 # 提交事務
